@@ -32,6 +32,7 @@ const mapError = document.querySelector('.map__error')
 
 let coord = [];
 let id;
+let metroId;
 
 ymaps.ready(init);
 function init() {
@@ -57,7 +58,7 @@ function init() {
 
 
 
-    function setCenter(item) {
+    function setCenter() {
 
 
         map.setBounds(map.geoObjects.getBounds(), {
@@ -67,7 +68,7 @@ function init() {
 
     }
 
-    const getSelect = () => {
+    const getSelect = (metroString) => {
         postData('https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/city?pid=29028')
 
             .then(res => {
@@ -95,13 +96,26 @@ function init() {
                         removeItems('.metro__item');
                         makeSelect(grouped, 'metro__item', metro);
                     });
+                metroId = metro.value;
 
 
 
 
             })
             .then(() => {
-                postData(`https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/doctor/list/start/0/count/10/city/${select.value}/speciality/90?pid=29028`)
+                let url;
+                if (metroString) {
+
+                    url = `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/doctor/list/start/0/count/10/city/${select.value}/speciality/90/stations/${metroString}/?pid=29028`;
+
+
+
+                } else {
+
+                    url = `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/doctor/list/start/0/count/10/city/${select.value}/speciality/90/?pid=29028`;
+
+                }
+                postData(url)
                     .then((res) => {
 
 
@@ -151,29 +165,30 @@ function init() {
 
     getSelect();
 
+    const newMap = (item) => {
+        coord = [];
+        mapError.style.display = 'block';
+        mapError.textContent = 'Загрузка';
+
+        if (item) {
+            getSelect(item);
+        } else {
+            getSelect();
+        }
+
+
+        map.geoObjects.removeAll();
+
+    };
+
     select.addEventListener('change', (e) => {
 
 
-        if (id != select.value && e.target == select || e.target.classList.contains('city__item')) {
-            const newMap = () => {
-                coord = [];
-                mapError.style.display = 'block';
-                mapError.textContent = 'Загрузка';
+        if (id != select.value && e.target == select && metro.value === 'Выберите метро' || e.target.classList.contains('city__item')) {
 
-                getSelect();
-
-                map.geoObjects.removeAll();
-
-            };
 
             newMap();
 
-
-            // document.querySelectorAll('.city__item').forEach(item => {
-            //     item.addEventListener('click', () => {
-            //         newMap();
-            //     });
-            // });
 
         }
 
@@ -183,8 +198,14 @@ function init() {
 
     });
 
-    metro.addEventListener('click', () => {
-        console.log(metro.value);
+    metro.addEventListener('change', (e) => {
+
+        if (metro.value != 'Выберите метро' && metroId != metro.value && e.target.classList.contains('metro__item') || e.target === metro) {
+            metroId = metro.value;
+            newMap(metroId);
+
+
+        }
 
     });
 
@@ -195,11 +216,6 @@ function init() {
 
 }
 
-
-
-window.addEventListener('click', (e) => {
-    console.log(e.target);
-})
 
 
 
