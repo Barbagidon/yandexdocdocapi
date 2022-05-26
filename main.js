@@ -144,14 +144,14 @@ function init() {
                             mapError.style.display = 'none';
                         }
 
-                    })
+                    });
             });
 
     };
 
     getSelect();
 
-    select.addEventListener('click', () => {
+    select.addEventListener('change', () => {
 
 
         if (id != select.value) {
