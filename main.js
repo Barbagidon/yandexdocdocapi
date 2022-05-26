@@ -138,13 +138,13 @@ function init() {
                             mapError.textContent = 'К сожалению, в вашем городе нет таких врачей';
                         }
 
+                    })
+                    .then(() => {
+                        if (mapError.textContent === 'Загрузка') {
+                            mapError.style.display = 'none';
+                        }
 
-                        // const bounds = new map.GeoCollectionBounds(coord);
-                        // map.setBounds(bounds);
-
-
-
-                    });
+                    })
             });
 
     };
@@ -152,15 +152,15 @@ function init() {
     getSelect();
 
     select.addEventListener('click', () => {
-        
-        
+
+
         if (id != select.value) {
             coord = [];
             mapError.style.display = 'block';
-            mapError.textContent = 'Загрузка...';
-        
+            mapError.textContent = 'Загрузка';
+
             getSelect();
-           
+
             map.geoObjects.removeAll();
 
         }
@@ -179,6 +179,12 @@ function init() {
 
 
 }
+
+
+
+window.addEventListener('click', (e) => {
+    console.log(e.target);
+})
 
 
 
