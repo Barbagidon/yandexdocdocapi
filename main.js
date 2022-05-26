@@ -151,29 +151,29 @@ function init() {
 
     getSelect();
 
-    select.addEventListener('change', () => {
+    select.addEventListener('change', (e) => {
 
 
-        if (id != select.value) {
-            coord = [];
-            mapError.style.display = 'block';
-            mapError.textContent = 'Загрузка';
+        if (id != select.value && e.target == select || e.target.classList.contains('city__item')) {
+            const newMap = () => {
+                coord = [];
+                mapError.style.display = 'block';
+                mapError.textContent = 'Загрузка';
 
-            getSelect();
+                getSelect();
 
-            map.geoObjects.removeAll();
+                map.geoObjects.removeAll();
 
-            document.querySelectorAll('.city__item').forEach(item => {
-                item.addEventListener('click', () => {
-                    coord = [];
-                    mapError.style.display = 'block';
-                    mapError.textContent = 'Загрузка';
+            };
 
-                    getSelect();
+            newMap();
 
-                    map.geoObjects.removeAll();
-                });
-            });
+
+            // document.querySelectorAll('.city__item').forEach(item => {
+            //     item.addEventListener('click', () => {
+            //         newMap();
+            //     });
+            // });
 
         }
 
