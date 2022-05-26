@@ -104,7 +104,7 @@ function init() {
                 postData(`https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/doctor/list/start/0/count/10/city/${select.value}/speciality/90?pid=29028`)
                     .then((res) => {
 
-                        console.log(metro.value);
+
                         // console.log(res.DoctorList);
 
                         for (let { ClinicsInfo } of res.DoctorList) {
@@ -122,6 +122,7 @@ function init() {
                         }
 
                         coord.forEach((item, i) => {
+
                             const placemark = new ymaps.Placemark(item);
                             map.geoObjects.add(placemark);
                             map.geoObjects.getBounds();
@@ -130,6 +131,7 @@ function init() {
                         });
                         if (coord.length > 0) {
                             mapError.style.display = 'none';
+                            mapError.textContent = 'Загрузка';
                             setCenter(coord);
                         } else {
                             mapError.style.display = 'block';
@@ -150,25 +152,31 @@ function init() {
     getSelect();
 
     select.addEventListener('click', () => {
-
-        console.log(objectManager);
+        
+        
         if (id != select.value) {
-
             coord = [];
+            mapError.style.display = 'block';
+            mapError.textContent = 'Загрузка...';
+        
             getSelect();
-
+           
             map.geoObjects.removeAll();
-
-
-
 
         }
 
-
-
-
+        if (id == select.value) {
+            mapError.style.display = 'none';
+        }
 
     });
+
+    metro.addEventListener('click', () => {
+        console.log(metro.value);
+
+    });
+
+
 
 }
 
