@@ -163,6 +163,18 @@ function init() {
 
             map.geoObjects.removeAll();
 
+            document.querySelectorAll('.city__item').forEach(item => {
+                item.addEventListener('click', () => {
+                    coord = [];
+                    mapError.style.display = 'block';
+                    mapError.textContent = 'Загрузка';
+
+                    getSelect();
+
+                    map.geoObjects.removeAll();
+                });
+            });
+
         }
 
         if (id == select.value) {
@@ -175,6 +187,9 @@ function init() {
         console.log(metro.value);
 
     });
+
+
+
 
 
 
