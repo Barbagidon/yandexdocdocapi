@@ -22,6 +22,16 @@ const removeItems = (selector) => {
   });
 };
 
+const disabledSelects = (disabled) => {
+  document.querySelectorAll("select").forEach((item) => {
+    if (disabled) {
+      item.disabled = disabled;
+    } else {
+      item.disabled = disabled;
+    }
+  });
+};
+
 const select = document.querySelector("#city");
 const metro = document.querySelector("#metro");
 const area = document.querySelector("#area");
@@ -32,7 +42,6 @@ let id;
 let metroId;
 let areaId;
 let url;
-let canAdd;
 
 ymaps.ready(init);
 function init() {
@@ -79,7 +88,6 @@ function init() {
               `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/district/city/${select.value}?pid=29028`
             ).then((res) => {
               makeSelect(res.DistrictList, "area__item", area);
-              //   areaId = area.value;
             });
           } else {
             area.style.display = "none";
@@ -125,7 +133,6 @@ function init() {
               map.geoObjects.add(placemark);
               map.geoObjects.getBounds();
               canAdd = true;
-              select.disabled = "";
             });
             if (coord.length > 0) {
               mapError.style.display = "none";
@@ -138,7 +145,7 @@ function init() {
             }
           })
           .then(() => {
-            select.disabled = "";
+            disabledSelects();
             if (mapError.textContent === "Загрузка") {
               mapError.style.display = "none";
             }
@@ -165,23 +172,16 @@ function init() {
   let correctMetro;
   let correctArea;
 
-  if (!canAdd) {
-  } else {
-    select.disabled = "";
-  }
-
   select.addEventListener("change", (e) => {
     if (
       (id != select.value && e.target == select && canAdd) ||
-      e.target.classList.contains("city__item" && canAdd)
+      e.target.classList.contains("city__item")
     ) {
-      select.disabled = "disabled";
+      disabledSelects("disabled");
       removeItems(".metro__item");
       removeItems(".area__item");
       newMap();
     }
-
-    console.log(select.disabled);
 
     if (id == select.value) {
       mapError.style.display = "none";
@@ -189,6 +189,7 @@ function init() {
   });
 
   metro.addEventListener("change", function (e) {
+    disabledSelects("disabled");
     if (this.value === "-1") {
       correctMetro = "-1";
       metroId = "";
@@ -211,6 +212,7 @@ function init() {
   });
 
   area.addEventListener("change", function (e) {
+    disabledSelects("disabled");
     if (this.value === "-1") {
       correctArea = "-1";
       areaId = "";
