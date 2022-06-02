@@ -6,10 +6,12 @@ const postData = async (url) => {
 };
 
 const makeSelect = (res, claz, select) => {
-  for (let { Name, Id } of res) {
-    let newOption = new Option(Name, Id);
-    newOption.classList.add(claz);
-    select.append(newOption);
+  if (document.querySelectorAll(`.${claz}`).length < 1) {
+    for (let { Name, Id } of res) {
+      let newOption = new Option(Name, Id);
+      newOption.classList.add(claz);
+      select.append(newOption);
+    }
   }
 };
 
@@ -28,6 +30,8 @@ const mapError = document.querySelector(".map__error");
 let coord = [];
 let id;
 let metroId;
+let areaId;
+let url;
 
 ymaps.ready(init);
 function init() {
@@ -67,28 +71,41 @@ function init() {
         postData(
           `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/metro/city/${select.value}?pid=29028`
         ).then((data) => {
-          // console.log(data);
-          let x = [];
-          for (let { Name, Id } of data.MetroList) {
-            let obj = { Name: Name, Id: Id };
-            x.push(obj);
+          if (data.MetroList.length < 1) {
+            area.style.display = "block";
+            metro.style.display = "none";
+            postData(
+              `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/district/city/${select.value}?pid=29028`
+            ).then((res) => {
+              console.log(res);
+              makeSelect(res.DistrictList, "area__item", area);
+              areaId = area.value;
+            });
+          } else {
+            area.style.display = "none";
+            metro.style.display = "block";
+            let x = [];
+            for (let { Name, Id } of data.MetroList) {
+              let obj = { Name: Name, Id: Id };
+              x.push(obj);
+            }
+
+            const grouped = Object.values(
+              x.reduce((acc, n) => {
+                acc[n.Name] = acc[n.Name] || { ...n };
+                return acc;
+              }, {})
+            );
+
+            makeSelect(grouped, "metro__item", metro);
           }
-
-          const grouped = Object.values(
-            x.reduce((acc, n) => {
-              acc[n.Name] = acc[n.Name] || { ...n };
-              return acc;
-            }, {})
-          );
-
-          makeSelect(grouped, "metro__item", metro);
         });
         metroId = metro.value;
       })
       .then(() => {
         let url;
         if (metroString) {
-          url = `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/doctor/list/start/0/count/10/city/${select.value}/speciality/90/stations/${metroString}/?pid=29028`;
+          url = `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/doctor/list/start/0/count/10/city/${metroString}/?pid=29028`;
         } else {
           url = `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/doctor/list/start/0/count/10/city/${select.value}/speciality/90/?pid=29028`;
         }
@@ -141,6 +158,7 @@ function init() {
   };
 
   let correctMetro;
+  let correctArea;
 
   select.addEventListener("change", (e) => {
     if (
@@ -148,6 +166,7 @@ function init() {
       e.target.classList.contains("city__item")
     ) {
       removeItems(".metro__item");
+      removeItems(".area__item");
       newMap();
     }
 
@@ -172,7 +191,23 @@ function init() {
     ) {
       console.log(correctMetro);
       metroId = metro.value;
+      newMap(`${select.value}/speciality/90/stations/${metroId}`);
+
       newMap(metroId);
+    }
+  });
+
+  area.addEventListener("change", function(e){
+    if (this.value === "-1") {
+      correctArea = "-1";
+    } else {
+      correctArea = "";
+    }
+
+    if (e.target === area && correctArea != "-1" && areaId != area.value) {
+      console.log(correctArea);
+      areaId = area.value;
+      newMap(`${select.value}/district/${areaId}/speciality/90/?pid=29028`);
     }
   });
 }
