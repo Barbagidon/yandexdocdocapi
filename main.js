@@ -77,9 +77,8 @@ function init() {
             postData(
               `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/district/city/${select.value}?pid=29028`
             ).then((res) => {
-              console.log(res);
               makeSelect(res.DistrictList, "area__item", area);
-              areaId = area.value;
+              //   areaId = area.value;
             });
           } else {
             area.style.display = "none";
@@ -105,10 +104,12 @@ function init() {
       .then(() => {
         let url;
         if (metroString) {
-          url = `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/doctor/list/start/0/count/10/city/${metroString}/?pid=29028`;
+          url = `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/doctor/list/start/0/count/10/city/${select.value}/${metroString}/?pid=29028`;
         } else {
           url = `https://barbagidonproxy.herokuapp.com/https://api.docdoc.ru/public/rest/1.0.12/doctor/list/start/0/count/10/city/${select.value}/speciality/90/?pid=29028`;
         }
+
+        console.log(metroString);
         postData(url)
           .then((res) => {
             for (let { ClinicsInfo } of res.DoctorList) {
@@ -178,6 +179,7 @@ function init() {
   metro.addEventListener("change", function (e) {
     if (this.value === "-1") {
       correctMetro = "-1";
+      newMap();
     } else {
       correctMetro = "";
     }
@@ -191,23 +193,26 @@ function init() {
     ) {
       console.log(correctMetro);
       metroId = metro.value;
-      newMap(`${select.value}/speciality/90/stations/${metroId}`);
+      newMap(`speciality/90/stations/${metroId}`);
 
-      newMap(metroId);
     }
   });
 
-  area.addEventListener("change", function(e){
+  area.addEventListener("change", function (e) {
     if (this.value === "-1") {
       correctArea = "-1";
+      newMap();
     } else {
       correctArea = "";
     }
 
-    if (e.target === area && correctArea != "-1" && areaId != area.value || e.target.classList.contains("area__item") && correctArea != "-1" ) {
+    if (
+      (e.target === area && correctArea != "-1" && areaId != area.value) ||
+      (e.target.classList.contains("area__item") && correctArea != "-1")
+    ) {
       console.log(correctArea);
       areaId = area.value;
-      newMap(`${select.value}/district/${areaId}/speciality/90/?pid=29028`);
+      newMap(`district/${areaId}/speciality/90/?pid=29028`);
     }
   });
 }
