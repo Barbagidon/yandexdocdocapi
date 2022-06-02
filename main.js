@@ -179,6 +179,7 @@ function init() {
   metro.addEventListener("change", function (e) {
     if (this.value === "-1") {
       correctMetro = "-1";
+      metroId = "";
       newMap();
     } else {
       correctMetro = "";
@@ -194,13 +195,13 @@ function init() {
       console.log(correctMetro);
       metroId = metro.value;
       newMap(`speciality/90/stations/${metroId}`);
-
     }
   });
 
   area.addEventListener("change", function (e) {
     if (this.value === "-1") {
       correctArea = "-1";
+      areaId = "";
       newMap();
     } else {
       correctArea = "";
