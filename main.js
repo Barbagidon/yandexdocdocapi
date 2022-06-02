@@ -32,6 +32,7 @@ let id;
 let metroId;
 let areaId;
 let url;
+let canAdd;
 
 ymaps.ready(init);
 function init() {
@@ -123,6 +124,8 @@ function init() {
               const placemark = new ymaps.Placemark(item);
               map.geoObjects.add(placemark);
               map.geoObjects.getBounds();
+              canAdd = true;
+              select.disabled = "";
             });
             if (coord.length > 0) {
               mapError.style.display = "none";
@@ -135,6 +138,7 @@ function init() {
             }
           })
           .then(() => {
+            select.disabled = "";
             if (mapError.textContent === "Загрузка") {
               mapError.style.display = "none";
             }
@@ -161,15 +165,23 @@ function init() {
   let correctMetro;
   let correctArea;
 
+  if (!canAdd) {
+  } else {
+    select.disabled = "";
+  }
+
   select.addEventListener("change", (e) => {
     if (
-      (id != select.value && e.target == select) ||
-      e.target.classList.contains("city__item")
+      (id != select.value && e.target == select && canAdd) ||
+      e.target.classList.contains("city__item" && canAdd)
     ) {
+      select.disabled = "disabled";
       removeItems(".metro__item");
       removeItems(".area__item");
       newMap();
     }
+
+    console.log(select.disabled);
 
     if (id == select.value) {
       mapError.style.display = "none";
