@@ -204,7 +204,7 @@ function init() {
       correctArea = "";
     }
 
-    if (e.target === area && correctArea != "-1" && areaId != area.value) {
+    if (e.target === area && correctArea != "-1" && areaId != area.value || e.target.classList.contains("area__item") && correctArea != "-1" ) {
       console.log(correctArea);
       areaId = area.value;
       newMap(`${select.value}/district/${areaId}/speciality/90/?pid=29028`);
