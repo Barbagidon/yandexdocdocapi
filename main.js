@@ -50,6 +50,7 @@ function init() {
     {
       center: [55.73, 37.65],
       zoom: 10,
+      controls: ["zoomControl"],
     },
     {
       searchControlProvider: "yandex#search",
@@ -132,7 +133,13 @@ function init() {
               const placemark = new ymaps.Placemark(item);
               map.geoObjects.add(placemark);
               map.geoObjects.getBounds();
-              canAdd = true;
+              placemark.events.add("click", function (e) {
+                const coords = e.get("coords");
+                map.panTo(coords, {
+                    // delay: 2500,
+                    duration: 500
+                });
+              });
             });
             if (coord.length > 0) {
               mapError.style.display = "none";
@@ -174,7 +181,7 @@ function init() {
 
   select.addEventListener("change", (e) => {
     if (
-      (id != select.value && e.target == select && canAdd) ||
+      (id != select.value && e.target == select) ||
       e.target.classList.contains("city__item")
     ) {
       disabledSelects("disabled");
